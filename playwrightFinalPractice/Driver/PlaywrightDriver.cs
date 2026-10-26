@@ -57,9 +57,7 @@ namespace playwrightFinalPractice.Driver
 
         private async Task  <IPage> CreatePageAsync()
         {
-            string baseUrl = "https://eaapp.somee.com/";
-            
-
+   
            return await (await _broserContext).NewPageAsync();
 
             
