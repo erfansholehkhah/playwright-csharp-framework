@@ -9,7 +9,7 @@ namespace playwrightFinalPractice.Config
         public string[] Args { get; set; }
         public float TimeOut { get; set; }
         public bool Headless { get; set; }
-
+         public string? ApplicationApiUrl { get; set; }
         public int SlowMo { get; set; }
 
         public DriverType DriverType  { get; set; }

@@ -12,6 +12,7 @@ namespace playwrightFinalPractice.Driver
         private readonly TestSettings _testSettings;
         private readonly IPlaywrighDriverInitializer _playwrighDriverInitializer;
         private readonly AsyncTask<IPage>  _page;
+        private readonly AsyncTask<IAPIRequestContext> _apiRequestContext;
 
         public PlaywrightDriver(TestSettings testSettings, IPlaywrighDriverInitializer playwrighDriverInitializer) // CONSTRUCTOR CAN NOT BE ASYNC AT ALL 
         {
@@ -22,6 +23,7 @@ namespace playwrightFinalPractice.Driver
             // we can user mthod grouping 
             _broserContext =  new AsyncTask <IBrowserContext>(CreateBrowserContext);
             _page =  new AsyncTask<IPage> (CreatePageAsync);
+            _apiRequestContext = new AsyncTask<IAPIRequestContext>(CreateApiContext);
 
            
 
@@ -32,6 +34,8 @@ namespace playwrightFinalPractice.Driver
         public Task< IBrowser> Browser => _browser.Value;
 
         public Task< IBrowserContext> BrowserContext => _broserContext.Value;
+        // exposing 
+        public Task<IAPIRequestContext> ApiRequestContext => _apiRequestContext.Value;
         
 
         private async Task<IBrowser> InitializePlaywrightAsync()
@@ -44,6 +48,17 @@ namespace playwrightFinalPractice.Driver
                 DriverType.Firefox => await _playwrighDriverInitializer.GetFireFoxDriverAsync(_testSettings),
                 _ => await _playwrighDriverInitializer.GetChromeDriverAsync(_testSettings),
             };
+        }
+
+        private async Task <IAPIRequestContext>CreateApiContext() 
+        {
+            var playwright  = await Playwright.CreateAsync();
+            return await playwright.APIRequest.NewContextAsync(new APIRequestNewContextOptions
+            {
+                BaseURL =  _testSettings.ApplicationApiUrl,
+                IgnoreHTTPSErrors = true,
+
+            });
         }
 
         private async Task<IBrowserContext> CreateBrowserContext()
